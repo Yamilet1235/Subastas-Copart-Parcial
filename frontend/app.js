@@ -1,6 +1,34 @@
 const API_URL = localStorage.getItem('copartApiUrl')
   || document.querySelector('meta[name="api-base-url"]').content.replace(/\/$/, '');
 const FALLBACK_IMAGE = 'https://placehold.co/900x560/e8f2fa/1769aa?text=Vehiculo';
+const FOTOS_POR_MODELO = {
+  'ford f-150': [
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Ford_F-150_%28fourteenth_generation%29_Rutesheimer_Autoschau_2025_DSC_9230.jpg/1280px-Ford_F-150_%28fourteenth_generation%29_Rutesheimer_Autoschau_2025_DSC_9230.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Ford_F-150_%28fourteenth_generation%29_Rutesheimer_Autoschau_2025_DSC_9231.jpg/1280px-Ford_F-150_%28fourteenth_generation%29_Rutesheimer_Autoschau_2025_DSC_9231.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Ford_F-150_%28thirteenth_generation%29_IMG_0504.jpg/1280px-Ford_F-150_%28thirteenth_generation%29_IMG_0504.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Leimershof_US-Car-Treffen_Ford_F-150-20220911-RM-161830.jpg/1280px-Leimershof_US-Car-Treffen_Ford_F-150-20220911-RM-161830.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Bureau_of_Land_Management_Ford_F-150_on_Rancho_Dr.jpg/1280px-Bureau_of_Land_Management_Ford_F-150_on_Rancho_Dr.jpg',
+  ],
+  'bmw 330i': [
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%283%29.jpg/1280px-BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%283%29.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%286%29.jpg/1280px-BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%286%29.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%287%29.jpg/1280px-BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%287%29.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%288%29.jpg/1280px-BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%288%29.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%289%29.jpg/1280px-BMW_330i_%28G20%29_Washington_DC_Metro_Area%2C_USA_%289%29.jpg',
+  ],
+  'toyota rav4 xle': [
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/2021_Toyota_RAV4_PHV.jpg/1280px-2021_Toyota_RAV4_PHV.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Toyota_RAV4_Hybrid%2C_GIMS_2019%2C_Le_Grand-Saconnex_%28GIMS0518%29.jpg/1280px-Toyota_RAV4_Hybrid%2C_GIMS_2019%2C_Le_Grand-Saconnex_%28GIMS0518%29.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/%28USA-New_York%29_NYC_Medallion_Cab_Toyota_RAV4_NY-Taxi-Y202490C_2024-06-15.jpg/1280px-%28USA-New_York%29_NYC_Medallion_Cab_Toyota_RAV4_NY-Taxi-Y202490C_2024-06-15.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Toyota_RAV4_Plug-in_Hybrid_GR_Sport_IMG_9891.jpg/1280px-Toyota_RAV4_Plug-in_Hybrid_GR_Sport_IMG_9891.jpg',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Toyota_RAV4_Plug-in_Hybrid_GR_Sport_IMG_9896.jpg/1280px-Toyota_RAV4_Plug-in_Hybrid_GR_Sport_IMG_9896.jpg',
+  ],
+};
+
+function fotosCorrectas(vehiculo) {
+  const clave = `${vehiculo.marca} ${vehiculo.modelo}`.toLowerCase();
+  return FOTOS_POR_MODELO[clave] || vehiculo.fotos || [];
+}
 
 function leerSesion() {
   try {
@@ -123,10 +151,11 @@ function cargando() {
 }
 
 function cardVehiculo(vehiculo, editable = false) {
+  const fotoPrincipal = fotosCorrectas(vehiculo)[0] || vehiculo.fotoPrincipal || FALLBACK_IMAGE;
   return `
     <article class="vehicle-card">
       <div class="vehicle-image-wrap">
-        <img class="vehicle-image" src="${escapeHtml(vehiculo.fotoPrincipal || FALLBACK_IMAGE)}" alt="${escapeHtml(`${vehiculo.marca} ${vehiculo.modelo}`)}">
+        <img class="vehicle-image" src="${escapeHtml(fotoPrincipal)}" alt="${escapeHtml(`${vehiculo.marca} ${vehiculo.modelo}`)}">
         <span class="badge ${escapeHtml(vehiculo.nivelDanio)} damage-badge">${escapeHtml(vehiculo.nivelDanio)}</span>
         <span class="badge neutral status-badge">${escapeHtml(vehiculo.estado)}</span>
       </div>
@@ -277,6 +306,7 @@ async function renderFormularioVehiculo(id = null) {
     if (id) {
       vehiculo = await api(`/api/vehiculos/${id}`);
       if (!vehiculo.esPropietario) return renderError('No puedes editar una publicación de otro usuario.');
+      vehiculo.fotos = fotosCorrectas(vehiculo);
     }
   } catch (error) {
     return renderError(error.message);
@@ -366,6 +396,7 @@ async function renderDetalle(id) {
       api(`/api/vehiculos/${id}`),
       api(`/api/vehiculos/${id}/pujas`),
     ]);
+    vehiculo.fotos = fotosCorrectas(vehiculo);
     state.vehiculoActual = vehiculo;
     state.indiceFoto = 0;
     const minimo = calcularMinimo(vehiculo);
