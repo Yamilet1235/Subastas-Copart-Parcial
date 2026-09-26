@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "db:schema": "node scripts/run-schema.js",
+    "seed": "node scripts/seed.js",
+    "check": "node --check src/server.js && node --check src/config/database.js && node --check src/middleware/auth.js && node --check src/controllers/authController.js && node --check src/controllers/vehiculosController.js && node --check src/controllers/pujasController.js && node --check scripts/run-schema.js && node --check scripts/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mssql": "^12.7.2",
+    "socket.io": "^4.8.4"
+  }
+}

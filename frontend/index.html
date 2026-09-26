@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Subastas de vehículos en tiempo real">
+  <meta name="api-base-url" content="http://localhost:3001">
+  <title>Copart Live | Subastas de vehículos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav-shell" aria-label="Navegación principal">
+      <a class="brand" href="#/inicio" aria-label="Copart Live - Inicio">
+        <span class="brand-mark">C</span>
+        <span>Copart <strong>Live</strong></span>
+      </a>
+      <button class="menu-button" id="menu-button" aria-label="Abrir menú" aria-expanded="false">Menú</button>
+      <div class="nav-links" id="nav-links"></div>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <section class="loading-page">
+      <div class="spinner"></div>
+      <p>Cargando inventario...</p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <footer class="site-footer">
+    <span>Copart Live</span>
+    <span>Subastas claras, decisiones rápidas.</span>
+  </footer>
+
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
